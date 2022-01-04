@@ -1,0 +1,383 @@
+Git For Eclipse
+===============
+create git local repository for eclipse
+
+git diff
+========
+Working dir-->staging-->local repo-->remote repo
+
+create file in project folder>>>>>>vim index.txt
+it will open your git editor put some name like "animals"
+then press shift then insert :wq! for saving file in working dir
+
+Add file to staging>>>>git init>git add .>git status
+
+modifying the same file>>vim.txt>insert "birds" and save it "!wq"
+
+Now to see the difference in file content working directory and staging area
+==============================================================================
+Requirement1:::::
+ git diff index.txt
+warning: LF will be replaced by CRLF in index.txt.
+The file will have its original line endings in your working directory.
+diff --git a/index.txt b/index.txt
+index fcb5845..b5bf6bc 100644
+--- a/index.txt
++++ b/index.txt
+@@ -1 +1,2 @@
+ animals
++birds
+(Staging is source{a/index.txt}-staging and working directory is destination{b/index.txt}--workdir)
+
+fcb5845---Hash of file content from source/staging
+
+b5bf6bc-- Hash of file content from destination/workspace
+
+100644--100-represents type of file 644>>>>File permission>>>rw-r-r (4-r,2-w,1-e)
+
+--- a/index.txt-source file missing some line
+
++++ b/index.txt-new lines added in destination file
+
+ animals
++birds
+
+if any line prefixed with space means it is unchanged
+if any line prefixed with + means it is added in destination copy
+if any line prefixed with - means it is removed from destination copy
+
+Requirement2::::
+To see the difference in file content between Working Directory and Last Commit
+$ git diff HEAD index.txt 
+diff --git a/index.txt b/index.txt
+index fcb5845..b5bf6bc 100644
+--- a/index.txt
++++ b/index.txt
+@@ -1 +1,2 @@
+
+ animals
++birds
++fishes
+
+Requirement3::::
+To see the difference in file content between staged copy and Last Commit
+git diff --staged HEAD index.txt
+git diff --chached HEAD index.txt
+
+Requirement4:::
+TO See the difference in File content between specific commit and Working directory copy
+git log --online
+git diff d0ff720 index.txt
+
+Requirement5:::
+TO See the difference in File content between specific commit and staging area copy
+git diff --staged d0ff720
+
+Requirement6:::
+TO See the difference in File content between 2 specified commits
+git diff b09ffb73  d0ff720  index.txt
+
+
+Requirement7:::
+TO See the difference in File content between two branches
+master
+test
+
+git diff master test-->it shows diff between master and test branch
+
+Requirement8:::
+TO See the difference in File content between local and remote repositories
+
+git diff master origin/master
+
+Removing a file
+===========================
+git rm
+
+Req1:::Remove files from both staging and working directory
+git rm file1.txt
+git rm -r
+
+only for staging removal--git rm --cached file2.txt
+
+remove file only working directory---rm file2.txt
+
+git checkout command to discard unstagged changes in tracked files or working directory
+=======================================================================================
+1)Only for Working Directory
+2)To discard unstaged changes(The changes which are already added to staging  area)
+3)In the tracked files(The files which are already added to staging area/commit)
+$ vim file1.txt add some name"gudu,budu,sudu"(added in working dir not staging dir for reflect it in staging you have to add and commit)
+$ cat file1.txt
+$ git checkout -- file1.txt 
+$ cat file1.txt
+
+git reset
+===========
+remove changes from staging area
+
+to undo commits at repository level
+
+
+
+git branch
+===========
+git branch
+git status
+create new branch----git branch br1
+git branch
+br1
+*master
+Switching from one branch to another>>>
+git checout==>discard unstaged changes in working directory
+git checkout br1
+*br1
+master
+
+for creating new branch and switched into in single line
+--------------------------------------------------------
+git checkout -b br2
+
+git checkout master
+
+add two more files to master branch >>>>git touch file2.txt file3.txt
+
+$ git add file2.txt;git commit -m"file2.txt:"(added to staging area)
+
+$ git ls-files(checking list of files in staging area)
+
+$ git log --oneline
+118d6cc (HEAD -> master) file3.txt:
+049eae3 file2.txt:
+4368245 (br2, br1) added
+0b3d065 first round commit
+$ git checkout br1
+Switched to branch 'br1'
+
+$ ls
+bin/  Drivers/  file1.txt  index.txt  src/(now it will not show file2.txt and file3.txt bcoz at the time of "br1" creation it inherited parent master branch but later we added file2 and file3 to master)
+
+create two files in br1 branch
+$ touch x.txt y.txt
+$ git add x.txt;git commit -m"added br1"
+$ git add y.txt;git commit -m"added br1"
+
+$ git checkout master
+Switched to branch 'master'
+we dont have x.txt and y.txt those are in br1 branch
+ Merging
+==========
+fast forward merge
+------------------
+  $ git merge br1
+Merge made by the 'recursive' strategy.
+ x.txt | 0
+ y.txt | 0
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 x.txt
+ create mode 100644 y.txt
+$ ls
+bin/      file1.txt  file3.txt  index.txt  x.txt
+Drivers/  file2.txt  file4.txt  src/       y.txt
+
+Threeway merge
+--------------
+
+
+conflicts
+===========
+$ vim test.txt(insert text this is first test)
+$ cat test.txt
+this is first test
+ git add test.txt;git commit -m "MC1"
+
+$ vim test.txt
+$  cat test.txt
+this is first test
+this is second test
+$ git add test.txt;git commit -m "MC2"
+$ git log --oneline
+1fff5b1 (HEAD -> master) MC2
+78c652a MC1
+dded7bb Merge branch 'br1'
+531887c file4.txt added
+201c289 (br1) added br1
+bd8ac15 added br1
+118d6cc file3.txt:
+049eae3 file2.txt:
+4368245 (br2) added
+0b3d065 first round commit
+
+
+Branch Concept
+==================
+touch a.txt (master)
+$ ls
+a.txt
+$ git add a.txt
+$ git commit -m "a.txt"
+
+$ git branch
+* master 
+create new branch
+===================
+$ git branch br1
+
+$ git branch
+  br1
+* master
+
+$ git checkout br1
+Switched to branch 'br1'
+
+creating and switching to branch
+================================
+git checkout -b branchname 
+
+switching back to master
+========================
+$ git checkout master
+Switched to branch 'master'
+$ ls
+a.txt
+$ touch b.txt c.txt
+
+$ ls
+a.txt b.txt c.txt
+
+$ git add b.txt;git commit -m "b.txt"
+$ git add c.txt;git commit -m "c.txt"
+ 
+$ git checkout br1
+Switched to branch 'br1'
+
+$ ls
+a.txt
+$ git log --oneline
+67edef0 (HEAD -> br1, br2) a.txt
+
+$ git branch
+* br1
+  br2
+  master
+$ touch x.txt y.txt(br1)
+$ ls
+a.txt  x.txt  y.txt
+$ git add x.txt;git commit -m "x.txt"
+$ git add y.txt;git commit -m "y.txt"
+
+$ git checkout master
+Switched to branch 'master'
+
+$ ls
+a.txt  b.txt  c.txt(master)
+
+$ touch d.txt
+$ git add d.txt;git commit -m "d.txt"
+[master 167f055] d.txt
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 d.txt
+$ ls
+a.txt  b.txt  c.txt  d.txt
+
+MERGING
+=======
+$ git merge br1
+Merge made by the 'recursive' strategy.
+ x.txt | 0
+ y.txt | 0
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 x.txt
+ create mode 100644 y.txt
+$ ls
+a.txt  b.txt  c.txt  d.txt  x.txt  y.txt
+$ git log --oneline
+d9f71af (HEAD -> master) Merge branch 'br1'
+167f055 d.txt
+3df92cb (br1) y.txt
+810790b x.txt
+8d78adc c.txt
+1f9336d b.txt
+67edef0 (br2) a.txt
+CONFLICT
+=============
+$ vim test.txt
+(opening editor write "this is my first line
+")
+$ cat test.txt
+this is my first line
+
+$ git add test.txt;git commit -m "MC1"
+
+$ vim test.txt(opening editor write "this is my second line
+")
+$ cat test.txt
+this is my first line
+this is my second line
+$ git add test.txt;git commit -m "MC2"
+$ git log --oneline
+
+
+create branch br1>>>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
